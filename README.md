@@ -26,16 +26,16 @@ Run `lufs` followed by a file or directory path. You can use optional flags to c
 $ ./lufs track.mp3
 track.mp3
 LUFS: -14.2
-LUR:    3.2
+LRA:    3.2
 
 $ ./lufs music_folder/
 file1.wav
 LUFS: -16.5
-LUR:    4.1
+LRA:    4.1
 
 sub/file2.mp3
 LUFS: -12.1
-LUR:    2.1
+LRA:    2.1
 ```
 
 **LUFS Only (`-l`)**
@@ -57,6 +57,29 @@ $ ./lufs -r music_folder/
 file1.wav 4.1
 sub/file2.mp3 2.1
 ```
+
+
+## Guidelines
+
+### General Target Levels
+
+| Category | LUFS | LRA |
+| :--- | :--- | :--- |
+| **Podcast / Spoken Word** | -16 (Stereo) / -19 (Mono) | 3 - 7 |
+| **Music** | -14 | 4 - 8 |
+
+### LRA by Genre
+
+| Genre | Expected LRA |
+| :--- | :--- |
+| EDM / Club | 2 - 5 |
+| Metal / Hardcore | 3 - 5 |
+| Pop / Modern R&B | 4 - 7 |
+| Hip-Hop / Rap | 4 - 7 |
+| Modern Rock / Indie | 5 - 8 |
+| Acoustic / Folk | 6 - 10 |
+| Jazz / Blues | 8 - 14 |
+| Classical / Cinematic | 12 - 20+ |
 
 ## Installation
 

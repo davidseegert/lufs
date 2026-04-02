@@ -57,7 +57,7 @@ void processAudioFile(const fs::path& path, bool showLufs, bool showRange, bool 
         if (showLufs && showRange) {
             std::cout << displayPath << std::endl;
             std::cout << "LUFS: " << integratedLoudness << std::endl;
-            std::cout << "LUR:    " << loudnessRange << std::endl << std::endl;
+            std::cout << "LRA:    " << loudnessRange << std::endl << std::endl;
         } else if (showLufs) {
             if (isDirectoryMode) {
                 std::cout << displayPath << " " << integratedLoudness << std::endl;
@@ -80,6 +80,27 @@ void printHelp() {
     std::cout << "  -l    Print only the Integrated Loudness (LUFS)" << std::endl;
     std::cout << "  -r    Print only the Loudness Range (LU Range)" << std::endl;
     std::cout << "  -h    Print this help text" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Guidelines:" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Podcast / Spoken Word:" << std::endl;
+    std::cout << "LUFS: -16 (Stereo)" << std::endl;
+    std::cout << "      -19 (Mono)" << std::endl;
+    std::cout << "LRA: 3 - 7" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Music: " << std::endl;
+    std::cout << "LUFS: -14" << std::endl;
+    std::cout << "LRA: 4 - 8" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Loudness Range (LRA) might vary on genre:" << std::endl;
+    std::cout << "EDM / Club               2 - 5" << std::endl;
+    std::cout << "Metal / Hardcore         3 - 5" << std::endl;
+    std::cout << "Pop / Modern R&B         4 - 7" << std::endl;
+    std::cout << "Hip-Hop / Rap            4 - 7" << std::endl;
+    std::cout << "Modern Rock / Indie      5 - 8" << std::endl;
+    std::cout << "Acoustic / Folk          6 - 10" << std::endl;
+    std::cout << "Jazz / Blues             8 - 14" << std::endl;
+    std::cout << "Classical / Cinematic   12 - 20+." << std::endl;
 }
 
 int main(int argc, char** argv) {
