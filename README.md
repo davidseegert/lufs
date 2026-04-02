@@ -8,50 +8,55 @@
   - **ITU-R BS.1770-5**: Integrated Loudness (LUFS) using K-weighting and dual-gating.
   - **EBU Tech 3342**: Loudness Range (LRA) using 3-second statistical windows.
 - **Recursive Scanning**: Process entire directories and subdirectories automatically.
-- **Customizable Output**: Use flags to get only the specific values you need for scripting or overview.
 - **Versatile Decoding**: Powered by `miniaudio`, supporting WAV, MP3, FLAC, and more.
 - **Aligned Formatting**: Clean, readable output with aligned values.
 
 ## Usage
 
-### Analyze a single file
-```bash
-./lufs test.mp3
-```
-Output:
-```text
-test.mp3
-LUFS: -14.2
-LUR:    3.2
-```
+Run `lufs` followed by a file or directory path. You can use optional flags to customize the output:
 
-### Analyze a folder recursively
-```bash
-./lufs music_folder/
-```
-
-### Options
-- `-l`: Output only the Integrated Loudness (LUFS) value.
-- `-r`: Output only the Loudness Range (LRA) value.
+- `-l`: Output only the Integrated Loudness (LUFS).
+- `-r`: Output only the Loudness Range (LRA).
 - `-h`: Show help and usage information.
 
-### Scripting Mode (Compact Output)
-When using the `-l` or `-r` flags with a directory, `lufs` outputs one line per file in a computer-friendly format:
+### Examples
+
+**Default Output (LUFS & LRA)**
 ```bash
-./lufs -l music_folder/
-```
-Output:
-```text
-ambient/river.wav -16.5
-vocals/voice.mp3 -12.1
+$ ./lufs track.mp3
+track.mp3
+LUFS: -14.2
+LUR:    3.2
+
+$ ./lufs music_folder/
+file1.wav
+LUFS: -16.5
+LUR:    4.1
+
+sub/file2.mp3
+LUFS: -12.1
+LUR:    2.1
 ```
 
-## Technical Details
+**LUFS Only (`-l`)**
+```bash
+$ ./lufs -l track.mp3
+-14.2
 
-- **Language**: C++17
-- **Core Library**: [miniaudio](https://github.com/mackron/miniaudio) (Single-header audio decoding)
-- **Algorithm**: Implemented from scratch based on ITU-R BS.1770-5 specification.
-- **Backends**: Uses `MA_NO_DEVICE_IO` to remain a lightweight, dependency-free CLI tool.
+$ ./lufs -l music_folder/
+file1.wav -16.5
+sub/file2.mp3 -12.1
+```
+
+**Loudness Range Only (`-r`)**
+```bash
+$ ./lufs -r track.mp3
+3.2
+
+$ ./lufs -r music_folder/
+file1.wav 4.1
+sub/file2.mp3 2.1
+```
 
 ## Installation
 
@@ -66,14 +71,18 @@ make
 ```
 This will create the `lufs` executable.
 
-## References
+## Technical Details
+- **Language**: C++17
+- **Core Library**: [miniaudio](https://github.com/mackron/miniaudio) (Single-header audio decoding)
+- **Algorithm**: Implemented from scratch based on ITU-R BS.1770-5 specification.
+- **Backends**: Uses `MA_NO_DEVICE_IO` to remain a lightweight, dependency-free CLI tool.
 
+## References
 - **[ITU-R BS.1770-5](https://www.itu.int/rec/R-REC-BS.1770/en)**: Algorithms to measure audio programme loudness and true-peak audio level.
 - **[EBU Tech 3342](https://tech.ebu.ch/publications/tech3342)**: Loudness Range: A measure to supplement loudness normalisation in accordance with EBU R 128.
 - **[EBU R 128](https://tech.ebu.ch/publications/r128)**: Loudness normalisation and permitted maximum level of audio signals.
 
 ## License
-
 Copyright 2026 David Seegert
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
