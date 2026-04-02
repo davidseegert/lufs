@@ -41,12 +41,26 @@ private:
     Biquad stage2;
 };
 
+class TruePeakDetector {
+public:
+    TruePeakDetector();
+    void process(double x);
+    double getTruePeak() const { return maxAbs; }
+    void reset();
+
+private:
+    double maxAbs;
+    std::vector<double> history;
+    size_t historyIdx;
+};
+
 class LoudnessAnalyzer {
 public:
     LoudnessAnalyzer(int numChannels, double sampleRate);
     void process(const float* buffer, size_t numFrames);
     double getIntegratedLoudness();
     double getLoudnessRange();
+    double getTruePeak();
 
 private:
     struct Block {
@@ -57,6 +71,7 @@ private:
     int numChannels;
     double sampleRate;
     std::vector<KWeightingFilter> filters;
+    std::vector<TruePeakDetector> tpDetectors;
     std::vector<double> channelWeights;
 
     // Parameters for 400ms blocks

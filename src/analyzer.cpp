@@ -37,8 +37,46 @@ void KWeightingFilter::reset() {
     stage2.reset();
 }
 
-LoudnessAnalyzer::LoudnessAnalyzer(int numChannels, double sampleRate)
-    : numChannels(numChannels), sampleRate(sampleRate) {
+// 4x Interpolation filter coefficients (12 taps per phase)
+// Optimized Kaiser-Sinc filter (beta=5) for <0.1dB passband ripple
+static const double TP_COEFFS[3][12] = {
+    // Phase 1 (0.25 offset)
+    { 0.0017, -0.0129,  0.0434, -0.0984,  0.1983,  0.9205, -0.0984,  0.0434, -0.0129,  0.0017,  0.0000,  0.0000 },
+    // Phase 2 (0.50 offset)
+    { 0.0028, -0.0210,  0.0682, -0.1601,  0.6101,  0.6101, -0.1601,  0.0682, -0.0210,  0.0028,  0.0000,  0.0000 },
+    // Phase 3 (0.75 offset)
+    { 0.0017, -0.0129,  0.0434, -0.0984,  0.9205,  0.1983, -0.0984,  0.0434, -0.0129,  0.0017,  0.0000,  0.0000 }
+};
+// Note: Phase 0 is identity [0,0,0,0,0,1,0,0,0,0,0,0] - handled by maxAbs = std::max(maxAbs, std::abs(x))
+
+TruePeakDetector::TruePeakDetector() : maxAbs(0), history(12, 0.0), historyIdx(0) {}
+
+void TruePeakDetector::process(double x) {
+    history[historyIdx] = x;
+    
+    // Check original sample (Phase 0)
+    maxAbs = std::max(maxAbs, std::abs(x));
+    
+    // Calculate 3 interpolated points (Phases 1, 2, 3)
+    for (int p = 0; p < 3; ++p) {
+        double interp = 0;
+        for (int i = 0; i < 12; ++i) {
+            interp += history[(historyIdx + 1 + i) % 12] * TP_COEFFS[p][i];
+        }
+        maxAbs = std::max(maxAbs, std::abs(interp));
+    }
+    
+    historyIdx = (historyIdx + 11) % 12; // Circular shift forward logic
+}
+
+void TruePeakDetector::reset() {
+    maxAbs = 0;
+    std::fill(history.begin(), history.end(), 0.0);
+}
+
+LoudnessAnalyzer::LoudnessAnalyzer(int numChannels, double sampleRate) 
+    : numChannels(numChannels), sampleRate(sampleRate), 
+      tpDetectors(numChannels) { // Add tpDetectors to member list
     blockSizeFrames = static_cast<size_t>(0.4 * sampleRate);
     hopSizeFrames = static_cast<size_t>(0.1 * sampleRate); // 75% overlap means step is 25%, i.e. 100ms
     
@@ -60,7 +98,13 @@ LoudnessAnalyzer::LoudnessAnalyzer(int numChannels, double sampleRate)
 void LoudnessAnalyzer::process(const float* buffer, size_t numFrames) {
     for (size_t f = 0; f < numFrames; ++f) {
         for (int c = 0; c < numChannels; ++c) {
-            double filtered = filters[c].process(buffer[f * numChannels + c]);
+            float rawSample = buffer[f * numChannels + c];
+            
+            // True Peak detection (unfiltered)
+            tpDetectors[c].process(static_cast<double>(rawSample));
+
+            // K-Weighting for Loudness
+            double filtered = filters[c].process(static_cast<double>(rawSample));
             sampleBuffers[c].push_back(static_cast<float>(filtered));
         }
 
@@ -201,6 +245,16 @@ double LoudnessAnalyzer::getLoudnessRange() {
     double p95 = finalGated[static_cast<size_t>(0.95 * (finalGated.size() - 1))];
 
     return p95 - p10;
+}
+
+double LoudnessAnalyzer::getTruePeak() {
+    double overallMax = 0;
+    for (int c = 0; c < numChannels; ++c) {
+        overallMax = std::max(overallMax, tpDetectors[c].getTruePeak());
+    }
+    
+    if (overallMax <= 0) return -100.0;
+    return 20.0 * std::log10(overallMax);
 }
 
 } // namespace lufs

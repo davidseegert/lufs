@@ -20,3 +20,6 @@ test_*.wav
 test_scan/
 test_sort/
 gen_test.py
+
+# Spec files
+specs/

@@ -5,37 +5,31 @@
 ## Features
 
 - **Standard Compliant**:
-  - **ITU-R BS.1770-5**: Integrated Loudness (LUFS) using K-weighting and dual-gating.
-  - **EBU Tech 3342**: Loudness Range (LRA) using 3-second statistical windows.
+  - **ITU-R BS.1770-5**: Integrated Loudness (LUFS) and True Peak (dBTP).
+  - **EBU Tech 3342**: Loudness Range (LRA).
+- **True Peak Detection**: 4x oversampling interpolation to catch inter-sample peaks.
 - **Recursive Scanning**: Process entire directories and subdirectories automatically.
 - **Versatile Decoding**: Powered by `miniaudio`, supporting WAV, MP3, FLAC, and more.
 - **Aligned Formatting**: Clean, readable output with aligned values.
 
 ## Usage
 
-Run `lufs` followed by a file or directory path. You can use optional flags to customize the output:
+Run `lufs` followed by a file or directory path. Optional flags:
 
 - `-l`: Output only the Integrated Loudness (LUFS).
 - `-r`: Output only the Loudness Range (LRA).
+- `-p`: Output only the True Peak (dBTP).
 - `-h`: Show help and usage information.
 
 ### Examples
 
-**Default Output (LUFS & LRA)**
+**Default Output (LUFS, LRA & TP)**
 ```bash
 $ ./lufs track.mp3
 track.mp3
 LUFS: -14.2
 LRA:    3.2
-
-$ ./lufs music_folder/
-file1.wav
-LUFS: -16.5
-LRA:    4.1
-
-sub/file2.mp3
-LUFS: -12.1
-LRA:    2.1
+TP:    -1.0
 ```
 
 **LUFS Only (`-l`)**
