@@ -1,0 +1,22 @@
+# Binaries
+lufs
+
+# Object files
+src/*.o
+
+# Mac artifacts
+.DS_Store
+._*
+*/._*
+*.dSYM/
+
+# Temporary files
+*.swp
+*.swo
+*~
+
+# Test files (if any were left)
+test_*.wav
+test_scan/
+test_sort/
+gen_test.py
