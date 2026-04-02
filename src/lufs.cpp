@@ -87,41 +87,44 @@ void processAudioFile(const fs::path& path, bool showLufs, bool showRange, bool 
     }
 }
 
-void printHelp() {
+void printHelp(bool includeGuidelines) {
     std::cout << "Usage: lufs [options] <input_file_or_directory>" << std::endl;
     std::cout << "Options:" << std::endl;
     std::cout << "  -l    Print only the Integrated Loudness (LUFS)" << std::endl;
     std::cout << "  -r    Print only the Loudness Range (LU Range)" << std::endl;
     std::cout << "  -p    Print only the True Peak (dBTP)" << std::endl;
     std::cout << "  -h    Print this help text" << std::endl;
-    std::cout << std::endl;
-    std::cout << "Guidelines:" << std::endl;
-    std::cout << std::endl;
-    std::cout << "Podcast / Spoken Word:" << std::endl;
-    std::cout << "LUFS: -16 (Stereo)" << std::endl;
-    std::cout << "      -19 (Mono)" << std::endl;
-    std::cout << "LRA:  3 - 7" << std::endl;
-    std::cout << "TP:   -1.0" << std::endl;
-    std::cout << std::endl;
-    std::cout << "Music: " << std::endl;
-    std::cout << "LUFS: -14" << std::endl;
-    std::cout << "LRA:  4 - 8" << std::endl;
-    std::cout << "TP:   -1.0" << std::endl;
-    std::cout << std::endl;
-    std::cout << "Loudness Range (LRA) might vary on genre:" << std::endl;
-    std::cout << "EDM / Club               2 - 5" << std::endl;
-    std::cout << "Metal / Hardcore         3 - 5" << std::endl;
-    std::cout << "Pop / Modern R&B         4 - 7" << std::endl;
-    std::cout << "Hip-Hop / Rap            4 - 7" << std::endl;
-    std::cout << "Modern Rock / Indie      5 - 8" << std::endl;
-    std::cout << "Acoustic / Folk          6 - 10" << std::endl;
-    std::cout << "Jazz / Blues             8 - 14" << std::endl;
-    std::cout << "Classical / Cinematic   12 - 20+." << std::endl;
+
+    if (includeGuidelines) {
+        std::cout << std::endl;
+        std::cout << "Guidelines:" << std::endl;
+        std::cout << std::endl;
+        std::cout << "Podcast / Spoken Word:" << std::endl;
+        std::cout << "LUFS: -16 (Stereo)" << std::endl;
+        std::cout << "      -19 (Mono)" << std::endl;
+        std::cout << "LRA:  3 - 7" << std::endl;
+        std::cout << "TP:   -1.0" << std::endl;
+        std::cout << std::endl;
+        std::cout << "Music: " << std::endl;
+        std::cout << "LUFS: -14" << std::endl;
+        std::cout << "LRA:  4 - 8" << std::endl;
+        std::cout << "TP:   -1.0" << std::endl;
+        std::cout << std::endl;
+        std::cout << "Loudness Range (LRA) might vary on genre:" << std::endl;
+        std::cout << "EDM / Club               2 - 5" << std::endl;
+        std::cout << "Metal / Hardcore         3 - 5" << std::endl;
+        std::cout << "Pop / Modern R&B         4 - 7" << std::endl;
+        std::cout << "Hip-Hop / Rap            4 - 7" << std::endl;
+        std::cout << "Modern Rock / Indie      5 - 8" << std::endl;
+        std::cout << "Acoustic / Folk          6 - 10" << std::endl;
+        std::cout << "Jazz / Blues             8 - 14" << std::endl;
+        std::cout << "Classical / Cinematic   12 - 20+." << std::endl;
+    }
 }
 
 int main(int argc, char** argv) {
     if (argc < 2) {
-        printHelp();
+        printHelp(false);
         return 0;
     }
 
@@ -143,7 +146,7 @@ int main(int argc, char** argv) {
             showHelp = true;
         } else if (arg[0] == '-') {
             std::cerr << "Unknown option: " << arg << std::endl;
-            printHelp();
+            printHelp(false);
             return 1;
         } else {
             inputPathStr = arg;
@@ -151,13 +154,13 @@ int main(int argc, char** argv) {
     }
 
     if (showHelp) {
-        printHelp();
+        printHelp(true);
         return 0;
     }
 
     if (inputPathStr.empty()) {
         std::cerr << "Error: No input specified" << std::endl;
-        printHelp();
+        printHelp(false);
         return 1;
     }
 
